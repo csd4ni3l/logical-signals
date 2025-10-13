@@ -1,1 +1,1 @@
-
+Logical Signals is a game where you have to direct and change signals with logical gates to meet the end result.
