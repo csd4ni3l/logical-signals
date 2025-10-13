@@ -1,0 +1,10 @@
+[project]
+name = "logical-signals"
+version = "0.1.0"
+description = "logical-signals"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+ "arcade==3.2.0",
+ "pypresence>=4.3.0",
+]
