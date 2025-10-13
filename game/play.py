@@ -56,14 +56,32 @@ class Game(arcade.gui.UIView):
         self.ui.on_event = self.on_event
 
         self.anchor = self.add_widget(arcade.gui.UIAnchorLayout(size_hint=(1, 1)))
-        self.tools_box = self.anchor.add(arcade.gui.UIBoxLayout(vertical=False, space_between=5), anchor_x="center", anchor_y="bottom", align_y=5)
+        self.tools_box = self.anchor.add(arcade.gui.UIBoxLayout(space_between=5), anchor_x="right", anchor_y="bottom", align_x=-5, align_y=20)
 
         for gate in LOGICAL_GATES.keys():
-            button = self.tools_box.add(arcade.gui.UIFlatButton(width=self.window.width * 0.1, height=self.window.height * 0.1, text=f"Create {gate} gate", style=dropdown_style))
-            button.on_click = lambda event, gate=gate: self.add_gate(random.randint(0, self.window.width - 100), random.randint(0, self.window.height - 100), gate)
+            button = self.tools_box.add(arcade.gui.UIFlatButton(width=self.window.width * 0.1, height=self.window.height * 0.075, text=f"Create {gate} gate", style=dropdown_style))
+            button.on_click = lambda event, gate=gate: self.add_gate(random.randint(0, self.window.width - 100), random.randint(200, self.window.height - 100), gate)
 
-        evaluate_button = self.tools_box.add(arcade.gui.UIFlatButton(width=self.window.width * 0.1, height=self.window.height * 0.1, text="Evaluate", style=dropdown_style))
+        evaluate_button = self.tools_box.add(arcade.gui.UIFlatButton(width=self.window.width * 0.1, height=self.window.height * 0.075, text="Evaluate", style=dropdown_style))
         evaluate_button.on_click = lambda event: self.run_logic()
+
+        hide_button = self.tools_box.add(arcade.gui.UIFlatButton(width=self.window.width * 0.1, height=self.window.height * 0.075, text="Hide", style=dropdown_style))
+        hide_button.on_click = lambda event: self.hide_show_panel()
+
+    def hide_show_panel(self):
+        new_state = not self.tools_box.children[0].visible
+        hide_button = None
+
+        for button in self.tools_box.children:
+            if not button.text == "Hide" and not button.text == "Show":
+                button.visible = new_state
+            else:
+                hide_button = button
+
+        if new_state:
+            hide_button.text = "Hide"
+        else:
+            hide_button.text = "Show"
 
     def run_logic(self):
         for gate in self.gates:
@@ -96,9 +114,6 @@ class Game(arcade.gui.UIView):
             self.selected_input = None
 
     def add_gate(self, x, y, gate_type):
-        if len(self.gates) < 2:
-            gate_type = "INPUT" 
-
         self.gates.append(self.add_widget(LogicalGate(len(self.gates), x, y, gate_type)))
         
         self.gates[-1].input_add_button.on_click = lambda e, gate_id=len(self.gates) - 1: self.select_input(gate_id)
