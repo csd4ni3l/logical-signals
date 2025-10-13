@@ -7,6 +7,17 @@ menu_background_color = (30, 30, 47)
 log_dir = 'logs'
 discord_presence_id = 1427213145667276840
 
+LOGICAL_GATES = {
+    "INPUT": lambda a: a,
+    "AND": lambda a, b: a and b,
+    "OR": lambda a, b: a or b,
+    "NAND": lambda a, b: not (a and b),
+    "NOR": lambda a, b: not (a or b),
+    "XOR": lambda a, b: a != b,
+    "XNOR": lambda a, b: a == b,
+    "OUTPUT": lambda a: a
+}
+
 button_style = {'normal': UITextureButtonStyle(font_name="Roboto", font_color=arcade.color.BLACK), 'hover': UITextureButtonStyle(font_name="Roboto", font_color=arcade.color.BLACK),
                 'press': UITextureButtonStyle(font_name="Roboto", font_color=arcade.color.BLACK), 'disabled': UITextureButtonStyle(font_name="Roboto", font_color=arcade.color.BLACK)}
 big_button_style = {'normal': UITextureButtonStyle(font_name="Roboto", font_color=arcade.color.BLACK, font_size=26), 'hover': UITextureButtonStyle(font_name="Roboto", font_color=arcade.color.BLACK, font_size=26),

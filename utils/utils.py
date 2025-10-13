@@ -2,7 +2,28 @@ import logging, arcade, arcade.gui, sys, traceback
 
 from utils.constants import menu_background_color
 
-import pyglet.info, pyglet.event
+import pyglet.display
+
+def lerp(a, b, t):
+    return a + (b - a) * t
+
+def cubic_bezier_point(p0, p1, p2, p3, t):
+    u = 1 - t
+    x = (u ** 3) * p0[0] + 3 * (u ** 2) * t * p1[0] + 3 * u * (t ** 2) * p2[0] + (t ** 3) * p3[0]
+    y = (u ** 3) * p0[1] + 3 * (u ** 2) * t * p1[1] + 3 * u * (t ** 2) * p2[1] + (t ** 3) * p3[1]
+    return x, y
+
+def cubic_bezier_points(p0, p1, p2, p3, segments=40):
+    return [cubic_bezier_point(p0, p1, p2, p3, i / segments) for i in range(segments + 1)]
+
+def get_gate_port_position(gate, port: str):
+    rect = gate.rect
+    center_y = rect.center_y
+
+    if port == "output":
+        return (rect.right, center_y)
+    else:
+        return (rect.left, center_y)
 
 def dump_platform():
     import platform
