@@ -59,8 +59,8 @@ class Main(arcade.gui.UIView):
         self.settings_button.on_click = lambda event: self.settings()
 
     def play(self):
-        from game.play import Game
-        self.window.show_view(Game(self.pypresence_client))
+        from menus.level_selector import LevelSelector
+        self.window.show_view(LevelSelector(self.pypresence_client))
 
     def settings(self):
         from menus.settings import Settings

@@ -1,19 +1,19 @@
 import arcade, arcade.gui, random, datetime
 
-from utils.utils import cubic_bezier_points, get_gate_port_position
-from utils.constants import dropdown_style, LOGICAL_GATES
+from utils.utils import cubic_bezier_points, get_gate_port_position, generate_task_text
+from utils.constants import dropdown_style, LOGICAL_GATES, LEVELS
 
 from datetime import datetime
 
 class LogicalGate(arcade.gui.UIBoxLayout):
-    def __init__(self, id, x, y, gate_type):
+    def __init__(self, id, x, y, gate_type, value):
         super().__init__(x=x, y=y, space_between=2, vertical=False)
 
         self.id = id
         self.gate_type = gate_type
 
         if gate_type == "INPUT":
-            self.value = 1
+            self.value = value
         else:
             self.value = 0
 
@@ -41,11 +41,13 @@ class LogicalGate(arcade.gui.UIBoxLayout):
         return f"{self.gate_type}: {self.value}"
 
 class Game(arcade.gui.UIView):
-    def __init__(self, pypresence_client):
+    def __init__(self, pypresence_client, level_num):
         super().__init__()
 
         self.pypresence_client = pypresence_client
         self.pypresence_client.update(state="In game")
+
+        self.level_num = level_num
 
         self.gates: list[LogicalGate] = []
         self.connections = []
@@ -60,9 +62,19 @@ class Game(arcade.gui.UIView):
         self.anchor = self.add_widget(arcade.gui.UIAnchorLayout(size_hint=(1, 1)))
         self.tools_box = self.anchor.add(arcade.gui.UIBoxLayout(space_between=5), anchor_x="right", anchor_y="bottom", align_x=-5, align_y=20)
 
+        self.task_label = self.anchor.add(arcade.gui.UILabel(text=generate_task_text(LEVELS[level_num]), font_size=24), anchor_x="center", anchor_y="top")
+
         for gate in LOGICAL_GATES.keys():
             button = self.tools_box.add(arcade.gui.UIFlatButton(width=self.window.width * 0.1, height=self.window.height * 0.075, text=f"Create {gate} gate", style=dropdown_style))
-            button.on_click = lambda event, gate=gate: self.add_gate(random.randint(0, self.window.width - 100), random.randint(200, self.window.height - 100), gate)
+            button.on_click = lambda event, gate=gate: self.add_gate(random.randint(0, self.window.width - 300), random.randint(200, self.window.height - 100), gate)
+
+        for requirement in LEVELS[level_num]:
+            if requirement[1] == "INPUT":
+                for _ in range(requirement[0]):
+                    self.add_gate(random.randint(0, self.window.width - 300), random.randint(200, self.window.height - 100), "INPUT", requirement[2])
+            elif requirement[1] == "OUTPUT":
+                for _ in range(requirement[0]):
+                    self.add_gate(random.randint(0, self.window.width - 300), random.randint(200, self.window.height - 100), "OUTPUT")
 
         evaluate_button = self.tools_box.add(arcade.gui.UIFlatButton(width=self.window.width * 0.1, height=self.window.height * 0.075, text="Evaluate", style=dropdown_style))
         evaluate_button.on_click = lambda event: self.run_logic()
@@ -74,10 +86,16 @@ class Game(arcade.gui.UIView):
         hide_button.on_click = lambda event: self.hide_show_panel()
 
     def screenshot(self):
+        self.tools_box.visible = False
+        self.tools_box._requires_render = True
+        self.on_draw()
+
         image = arcade.get_image()
         now = datetime.now()
         timestamp = now.strftime("%Y-%m-%d_%H-%M-%S")
         image.save(f"{timestamp}.png")
+
+        self.tools_box.visible = True
 
         self.add_widget(arcade.gui.UIMessageBox(
             width=self.window.width / 2,
@@ -132,8 +150,8 @@ class Game(arcade.gui.UIView):
             self.selected_output = None 
             self.selected_input = None
 
-    def add_gate(self, x, y, gate_type):
-        self.gates.append(self.add_widget(LogicalGate(len(self.gates), x, y, gate_type)))
+    def add_gate(self, x, y, gate_type, value=None):
+        self.gates.append(self.add_widget(LogicalGate(len(self.gates), x, y, gate_type, value)))
         
         self.gates[-1].input_add_button.on_click = lambda e, gate_id=len(self.gates) - 1: self.select_input(gate_id)
         self.gates[-1].output_add_button.on_click = lambda e, gate_id=len(self.gates) - 1: self.select_output(gate_id)
