@@ -1,7 +1,9 @@
-import arcade, arcade.gui, random
+import arcade, arcade.gui, random, datetime
 
 from utils.utils import cubic_bezier_points, get_gate_port_position
 from utils.constants import dropdown_style, LOGICAL_GATES
+
+from datetime import datetime
 
 class LogicalGate(arcade.gui.UIBoxLayout):
     def __init__(self, id, x, y, gate_type):
@@ -65,8 +67,25 @@ class Game(arcade.gui.UIView):
         evaluate_button = self.tools_box.add(arcade.gui.UIFlatButton(width=self.window.width * 0.1, height=self.window.height * 0.075, text="Evaluate", style=dropdown_style))
         evaluate_button.on_click = lambda event: self.run_logic()
 
+        screenshot_button = self.tools_box.add(arcade.gui.UIFlatButton(width=self.window.width * 0.1, height=self.window.height * 0.075, text="Screenshot", style=dropdown_style))
+        screenshot_button.on_click = lambda event: self.screenshot()
+
         hide_button = self.tools_box.add(arcade.gui.UIFlatButton(width=self.window.width * 0.1, height=self.window.height * 0.075, text="Hide", style=dropdown_style))
         hide_button.on_click = lambda event: self.hide_show_panel()
+
+    def screenshot(self):
+        image = arcade.get_image()
+        now = datetime.now()
+        timestamp = now.strftime("%Y-%m-%d_%H-%M-%S")
+        image.save(f"{timestamp}.png")
+
+        self.add_widget(arcade.gui.UIMessageBox(
+            width=self.window.width / 2,
+            height=self.window.height / 2,
+            message_text=f"Screenshot was succesfully saved as {timestamp}.png in the current directory!",
+            title="Screenshot successful.",
+            buttons=("OK",)
+        ))
 
     def hide_show_panel(self):
         new_state = not self.tools_box.children[0].visible
