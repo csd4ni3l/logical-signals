@@ -36,23 +36,23 @@ class LevelSelector(arcade.gui.UIView):
         for n in range(len(LEVELS)):
             row, col = n // 5, n % 5
 
-            if n < 5:
+            if n < 8:
                 difficulty = "Easy"
-            elif n < 15:
+            elif n < 21:
                 difficulty = "Intermediate"
-            elif n < 20:
+            elif n < 30:
                 difficulty = "Hard"
             else:
                 difficulty = "Extra Hard"
 
             completed_notice = '\n(Completed)' if n in self.data['completed_levels'] else ''
 
-            level_button = self.grid.add(arcade.gui.UITextureButton(width=self.window.width / 8, height=self.window.height / 8, text=f"{difficulty} Level {n + 1}{completed_notice}", texture=button_texture, texture_hovered=button_hovered_texture, style=button_style, multiline=True), row=row, column=col)
+            level_button = self.grid.add(arcade.gui.UITextureButton(width=self.window.width / 8, height=self.window.height / 12, text=f"{difficulty} Level {n + 1}{completed_notice}", texture=button_texture, texture_hovered=button_hovered_texture, style=button_style, multiline=True), row=row, column=col)
             level_button.on_click = lambda event, n=n: self.play(n)
 
         row, col = (n + 1) // 5, (n + 1) % 5
 
-        diy_button = self.anchor.add(arcade.gui.UITextureButton(width=self.window.width / 2, height=self.window.height / 8, text=f"DIY", texture=button_texture, texture_hovered=button_hovered_texture, style=button_style), anchor_x="center", anchor_y="bottom", align_y=20)
+        diy_button = self.anchor.add(arcade.gui.UITextureButton(width=self.window.width / 2, height=self.window.height / 10, text=f"DIY", texture=button_texture, texture_hovered=button_hovered_texture, style=button_style), anchor_x="center", anchor_y="bottom", align_y=10)
         diy_button.on_click = lambda event: self.play(-1)
         
         self.grid._trigger_size_hint_update()

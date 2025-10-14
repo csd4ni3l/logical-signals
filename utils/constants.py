@@ -7,6 +7,8 @@ menu_background_color = (30, 30, 47)
 log_dir = 'logs'
 discord_presence_id = 1427213145667276840
 
+SINGLE_INPUT_LOGICAL_GATES = ["NOT"]
+
 LOGICAL_GATES = {
     "AND": lambda a, b: a and b,
     "OR": lambda a, b: a or b,
@@ -14,11 +16,11 @@ LOGICAL_GATES = {
     "NOR": lambda a, b: not (a or b),
     "XOR": lambda a, b: a != b,
     "XNOR": lambda a, b: a == b,
+    "NOT": lambda a: not a,
 }
 
 LEVELS = [
-    # EASY
-
+# EASY
     [
         [2, "INPUT", 1],
         [1, "AND"],
@@ -29,6 +31,11 @@ LEVELS = [
         [1, "INPUT", 0],
         [1, "OR"],
         [1, "OUTPUT", 1]
+    ],
+    [
+        [1, "INPUT", 1],
+        [1, "NOT"],
+        [1, "OUTPUT", 0]
     ],
     [
         [2, "INPUT", 1],
@@ -42,15 +49,26 @@ LEVELS = [
         [1, "OUTPUT", 1]
     ],
     [
+        [1, "INPUT", 0],
+        [1, "INPUT", 1],
+        [1, "NOT"],
+        [1, "AND"],
+        [1, "OUTPUT", 1]
+    ],
+    [
         [2, "INPUT", 1],
         [1, "INPUT", 0],
         [1, "AND"],
         [1, "OR"],
         [1, "OUTPUT", 1]
     ],
-
-    # INTERMEDIATE
-
+    [
+        [2, "INPUT", 1],
+        [1, "NOT"],
+        [1, "NAND"],
+        [1, "OUTPUT", 1]
+    ],
+# INTERMEDIATE
     [
         [2, "INPUT", 0],
         [1, "INPUT", 1],
@@ -66,12 +84,27 @@ LEVELS = [
         [1, "OUTPUT", 1]
     ],
     [
+        [1, "INPUT", 1],
+        [1, "INPUT", 0],
+        [1, "NOT"],
+        [1, "XOR"],
+        [1, "OUTPUT", 0]
+    ],
+    [
         [2, "INPUT", 1],
         [2, "INPUT", 0],
         [1, "OR"],
         [1, "AND"],
         [1, "XOR"],
         [1, "OUTPUT", 0]
+    ],
+    [
+        [2, "INPUT", 0],
+        [1, "INPUT", 1],
+        [1, "NOT"],
+        [1, "NOR"],
+        [1, "OR"],
+        [1, "OUTPUT", 1]
     ],
     [
         [3, "INPUT", 1],
@@ -85,6 +118,14 @@ LEVELS = [
         [2, "NOR"],
         [1, "AND"],
         [1, "OUTPUT", 1]
+    ],
+    [
+        [2, "INPUT", 1],
+        [1, "INPUT", 0],
+        [1, "NOT"],
+        [1, "AND"],
+        [1, "NAND"],
+        [1, "OUTPUT", 0]
     ],
     [
         [2, "INPUT", 1],
@@ -110,8 +151,9 @@ LEVELS = [
         [1, "OUTPUT", 1]
     ],
     [
-        [4, "INPUT", 0],
         [1, "INPUT", 1],
+        [3, "INPUT", 0],
+        [1, "NOT"],
         [2, "OR"],
         [1, "NAND"],
         [1, "OUTPUT", 0]
@@ -124,9 +166,16 @@ LEVELS = [
         [1, "AND"],
         [1, "OUTPUT", 0]
     ],
-    
-    # HARD
-
+# HARD
+    [
+        [3, "INPUT", 1],
+        [1, "INPUT", 0],
+        [1, "NOT"],
+        [1, "AND"],
+        [1, "OR"],
+        [1, "XOR"],
+        [1, "OUTPUT", 0]
+    ],
     [
         [3, "INPUT", 1],
         [2, "INPUT", 0],
@@ -139,9 +188,26 @@ LEVELS = [
     [
         [2, "INPUT", 1],
         [2, "INPUT", 0],
+        [2, "NOT"],
+        [1, "NAND"],
+        [1, "OR"],
+        [1, "OUTPUT", 1]
+    ],
+    [
+        [2, "INPUT", 1],
+        [2, "INPUT", 0],
         [3, "NAND"],
         [1, "OR"],
         [1, "OUTPUT", 0]
+    ],
+    [
+        [3, "INPUT", 0],
+        [1, "INPUT", 1],
+        [1, "NOT"],
+        [2, "NOR"],
+        [1, "XOR"],
+        [1, "XNOR"],
+        [1, "OUTPUT", 1]
     ],
     [
         [4, "INPUT", 0],
@@ -161,6 +227,15 @@ LEVELS = [
         [1, "OUTPUT", 0]
     ],
     [
+        [2, "INPUT", 1],
+        [3, "INPUT", 0],
+        [1, "NOT"],
+        [2, "XOR"],
+        [1, "NAND"],
+        [1, "NOR"],
+        [1, "OUTPUT", 0]
+    ],
+    [
         [4, "INPUT", 1],
         [2, "INPUT", 0],
         [2, "XOR"],
@@ -169,15 +244,23 @@ LEVELS = [
         [1, "XNOR"],
         [1, "OUTPUT", 1]
     ],
-
-    # Extra Hard
-
+# EXTRA HARD
     [
         [2, "INPUT", 1],
         [2, "INPUT", 0],
         [1, "AND"],
         [1, "OR"],
         [1, "NAND"],
+        [1, "XOR"],
+        [1, "OUTPUT", 0],
+        [1, "OUTPUT", 1]
+    ],
+    [
+        [2, "INPUT", 1],
+        [1, "INPUT", 0],
+        [1, "NOT"],
+        [1, "AND"],
+        [1, "OR"],
         [1, "XOR"],
         [1, "OUTPUT", 0],
         [1, "OUTPUT", 1]
@@ -193,13 +276,23 @@ LEVELS = [
         [1, "OUTPUT", 0]
     ],
     [
+        [2, "INPUT", 1],
+        [2, "INPUT", 0],
+        [2, "NOT"],
+        [1, "NAND"],
+        [1, "NOR"],
+        [1, "XOR"],
+        [1, "OUTPUT", 1],
+        [1, "OUTPUT", 0]
+    ],
+    [
         [4, "INPUT", 1],
         [2, "INPUT", 0],
         [2, "NOR"],
         [2, "XNOR"],
         [1, "AND"],
         [1, "OR"],
-        [2, "OUTPUT", 1],
+        [2, "OUTPUT", 1]
     ],
     [
         [3, "INPUT", 1],

@@ -1,10 +1,10 @@
 import arcade, arcade.gui, random, datetime, os, json
 
-from utils.utils import cubic_bezier_points, get_gate_port_position, generate_task_text
-from utils.constants import button_style, dropdown_style, LOGICAL_GATES, LEVELS
-from utils.preload import button_texture, button_hovered_texture
-
 from datetime import datetime
+
+from utils.utils import cubic_bezier_points, get_gate_port_position, generate_task_text
+from utils.constants import button_style, dropdown_style, LOGICAL_GATES, LEVELS, SINGLE_INPUT_LOGICAL_GATES
+from utils.preload import button_texture, button_hovered_texture
 
 class LogicalGate(arcade.gui.UIBoxLayout):
     def __init__(self, id, x, y, gate_type, value):
@@ -34,6 +34,8 @@ class LogicalGate(arcade.gui.UIBoxLayout):
             self.value = self.input[0].calculate_value()
         elif self.gate_type == "INPUT": # dont set INPUT to None
             pass
+        elif self.gate_type in SINGLE_INPUT_LOGICAL_GATES and len(self.input) == 1:
+            self.value = int(LOGICAL_GATES[self.gate_type](self.input[0].calculate_value()))
         elif len(self.input) == 2:
             self.value = int(LOGICAL_GATES[self.gate_type](self.input[0].calculate_value(), self.input[1].calculate_value())) # have to convert to int cause it might return boolean
         else:
@@ -179,7 +181,9 @@ class Game(arcade.gui.UIView):
                     else:
                         process_nodes.remove(requirement[1])
 
-        self.data["completed_levels"].append(self.level_num)
+        if not self.level_num in self.data["completed_levels"]:
+            self.data["completed_levels"].append(self.level_num)
+            
         self.task_label.text = f"You Successfully Completed Level {self.level_num + 1}!"
 
         with open("data.json", "w") as file:
@@ -193,7 +197,9 @@ class Game(arcade.gui.UIView):
         self.selected_input = None
 
     def select_input(self, gate_id):
-        if len(self.gates[gate_id].input) == 2:
+        if self.gates[gate_id].gate_type not in SINGLE_INPUT_LOGICAL_GATES and len(self.gates[gate_id].input) == 2:
+            return
+        elif self.gates[gate_id].gate_type in SINGLE_INPUT_LOGICAL_GATES and len(self.gates[gate_id].input) == 1:
             return
 
         if self.selected_output is not None:
