@@ -1,4 +1,4 @@
-import arcade, arcade.gui
+import arcade, arcade.gui, os, json
 
 from math import ceil
 
@@ -14,6 +14,15 @@ class LevelSelector(arcade.gui.UIView):
 
         self.anchor = self.add_widget(arcade.gui.UIAnchorLayout(size_hint=(1, 1)))
         self.grid = self.anchor.add(arcade.gui.UIGridLayout(width=self.window.width / 2, height=self.window.height / 2, vertical_spacing=10, horizontal_spacing=10, column_count=5, row_count=ceil((len(LEVELS) + 1) / 5)), anchor_x="center", anchor_y="top", align_y=-self.window.height / 8)
+
+        if os.path.exists("data.json"):
+            with open("data.json", "r") as file:
+                self.data = json.load(file)
+        else:
+            self.data = {}
+
+        if not "completed_levels" in self.data:
+            self.data["completed_levels"] = []
 
     def on_show_view(self):
         super().on_show_view()
@@ -36,7 +45,9 @@ class LevelSelector(arcade.gui.UIView):
             else:
                 difficulty = "Extra Hard"
 
-            level_button = self.grid.add(arcade.gui.UITextureButton(width=self.window.width / 8, height=self.window.height / 8, text=f"{difficulty} Level {n + 1}", texture=button_texture, texture_hovered=button_hovered_texture, style=button_style), row=row, column=col)
+            completed_notice = '\n(Completed)' if n in self.data['completed_levels'] else ''
+
+            level_button = self.grid.add(arcade.gui.UITextureButton(width=self.window.width / 8, height=self.window.height / 8, text=f"{difficulty} Level {n + 1}{completed_notice}", texture=button_texture, texture_hovered=button_hovered_texture, style=button_style, multiline=True), row=row, column=col)
             level_button.on_click = lambda event, n=n: self.play(n)
 
         row, col = (n + 1) // 5, (n + 1) % 5

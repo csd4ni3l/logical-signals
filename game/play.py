@@ -1,4 +1,4 @@
-import arcade, arcade.gui, random, datetime
+import arcade, arcade.gui, random, datetime, os, json
 
 from utils.utils import cubic_bezier_points, get_gate_port_position, generate_task_text
 from utils.constants import button_style, dropdown_style, LOGICAL_GATES, LEVELS
@@ -68,7 +68,7 @@ class Game(arcade.gui.UIView):
         self.tools_box = self.anchor.add(arcade.gui.UIBoxLayout(space_between=5), anchor_x="right", anchor_y="bottom", align_x=-5, align_y=20)
 
         if not level_num == -1:
-            self.task_label = self.anchor.add(arcade.gui.UILabel(text=generate_task_text(LEVELS[level_num]), font_size=20, multiline=True), anchor_x="center", anchor_y="top")
+            self.task_label = self.anchor.add(arcade.gui.UILabel(text=generate_task_text(LEVELS[level_num]), font_size=20, multiline=True), anchor_x="center", anchor_y="top", align_y=-15)
             for requirement in LEVELS[level_num]:
                 if requirement[1] == "INPUT":
                     for _ in range(requirement[0]):
@@ -80,7 +80,7 @@ class Game(arcade.gui.UIView):
                     for _ in range(requirement[0]):
                         self.add_gate(random.randint(300, self.window.width - 600), random.randint(200, self.window.height - 100), requirement[1])
         else:
-            self.task_label = self.anchor.add(arcade.gui.UILabel(text="Task: Have fun! Do whatever you want!", font_size=20), anchor_x="center", anchor_y="top")
+            self.task_label = self.anchor.add(arcade.gui.UILabel(text="Task: Have fun! Do whatever you want!", font_size=20), anchor_x="center", anchor_y="top", align_y=-15)
 
             for gate in list(LOGICAL_GATES.keys()) + ["INPUT 0", "INPUT 1", "OUTPUT"]:
                 button = self.tools_box.add(arcade.gui.UIFlatButton(width=self.window.width * 0.1, height=self.window.height * 0.075, text=f"Create {gate} gate", style=dropdown_style))
@@ -103,6 +103,15 @@ class Game(arcade.gui.UIView):
         self.back_button = arcade.gui.UITextureButton(texture=button_texture, texture_hovered=button_hovered_texture, text='<--', style=button_style, width=100, height=50)
         self.back_button.on_click = lambda event: self.main_exit()
         self.anchor.add(self.back_button, anchor_x="left", anchor_y="top", align_x=5, align_y=-5)
+
+        if os.path.exists("data.json"):
+            with open("data.json", "r") as file:
+                self.data = json.load(file)
+        else:
+            self.data = {}
+
+        if not "completed_levels" in self.data:
+            self.data["completed_levels"] = []
 
     def screenshot(self):
         self.tools_box.visible = False
@@ -169,6 +178,12 @@ class Game(arcade.gui.UIView):
                         return
                     else:
                         process_nodes.remove(requirement[1])
+
+        self.data["completed_levels"].append(self.level_num)
+        self.task_label.text = f"You Successfully Completed Level {self.level_num + 1}!"
+
+        with open("data.json", "w") as file:
+            file.write(json.dumps(self.data, indent=4))
                     
     def select_output(self, gate_id):
         if self.gates[gate_id].output:
