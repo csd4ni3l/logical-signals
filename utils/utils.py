@@ -7,8 +7,8 @@ import pyglet.display
 def generate_task_text(level):
     text = "Task: You need to use "
 
-    text += f"{', '.join([f'{requirement[0]} {requirement[1]} gate(s)' for requirement in level if not requirement[1] in ['INPUT', 'OUTPUT']])}"
-    text += f" to result in {', '.join([f'{requirement[0]} OUTPUT gate(s) with value {requirement[2]}' for requirement in level if requirement[1] == 'OUTPUT'])}"
+    text += ', '.join([f'{requirement[0]} {requirement[1]} gate(s)' for requirement in level if not requirement[1] in ['INPUT', 'OUTPUT']])
+    text += f"\nResult: {', '.join([f'{requirement[0]} OUTPUT gate(s) with value {requirement[2]}' for requirement in level if requirement[1] == 'OUTPUT'])}"
 
     return text
 

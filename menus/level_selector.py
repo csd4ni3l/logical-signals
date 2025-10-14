@@ -13,7 +13,7 @@ class LevelSelector(arcade.gui.UIView):
         self.pypresence_client.update(state="In Menus", details="Level Selector")
 
         self.anchor = self.add_widget(arcade.gui.UIAnchorLayout(size_hint=(1, 1)))
-        self.grid = self.anchor.add(arcade.gui.UIGridLayout(width=self.window.width / 2, height=self.window.height / 2, vertical_spacing=10, horizontal_spacing=10, column_count=5, row_count=ceil(len(LEVELS) / 5)), anchor_x="center", anchor_y="top", align_y=-self.window.height / 8)
+        self.grid = self.anchor.add(arcade.gui.UIGridLayout(width=self.window.width / 2, height=self.window.height / 2, vertical_spacing=10, horizontal_spacing=10, column_count=5, row_count=ceil((len(LEVELS) + 1) / 5)), anchor_x="center", anchor_y="top", align_y=-self.window.height / 8)
 
     def on_show_view(self):
         super().on_show_view()
@@ -26,8 +26,23 @@ class LevelSelector(arcade.gui.UIView):
 
         for n in range(len(LEVELS)):
             row, col = n // 5, n % 5
-            level_button = self.grid.add(arcade.gui.UITextureButton(width=self.window.width / 8, height=self.window.height / 8, text=f"Level {n + 1}", texture=button_texture, texture_hovered=button_hovered_texture, style=button_style), row=row, column=col)
+
+            if n < 5:
+                difficulty = "Easy"
+            elif n < 15:
+                difficulty = "Intermediate"
+            elif n < 20:
+                difficulty = "Hard"
+            else:
+                difficulty = "Extra Hard"
+
+            level_button = self.grid.add(arcade.gui.UITextureButton(width=self.window.width / 8, height=self.window.height / 8, text=f"{difficulty} Level {n + 1}", texture=button_texture, texture_hovered=button_hovered_texture, style=button_style), row=row, column=col)
             level_button.on_click = lambda event, n=n: self.play(n)
+
+        row, col = (n + 1) // 5, (n + 1) % 5
+
+        diy_button = self.grid.add(arcade.gui.UITextureButton(width=self.window.width / 8, height=self.window.height / 8, text=f"DIY", texture=button_texture, texture_hovered=button_hovered_texture, style=button_style), row=row, column=col)
+        diy_button.on_click = lambda event: self.play(-1)
         
         self.grid._trigger_size_hint_update()
 

@@ -17,6 +17,8 @@ LOGICAL_GATES = {
 }
 
 LEVELS = [
+    # EASY
+
     [
         [2, "INPUT", 1],
         [1, "AND"],
@@ -25,14 +27,201 @@ LEVELS = [
     [
         [1, "INPUT", 1],
         [1, "INPUT", 0],
-        [1, "AND"],
+        [1, "OR"],
         [1, "OUTPUT", 0]
     ],
     [
-        [1, "INPUT", 0],
+        [2, "INPUT", 1],
+        [1, "NAND"],
+        [1, "OUTPUT", 0]
+    ],
+    [
         [1, "INPUT", 1],
+        [1, "INPUT", 0],
+        [1, "XOR"],
+        [1, "OUTPUT", 1]
+    ],
+    [
+        [2, "INPUT", 1],
+        [1, "INPUT", 0],
+        [1, "AND"],
         [1, "OR"],
         [1, "OUTPUT", 1]
+    ],
+
+    # INTERMEDIATE
+
+    [
+        [2, "INPUT", 0],
+        [1, "INPUT", 1],
+        [1, "NOR"],
+        [1, "AND"],
+        [1, "OUTPUT", 1]
+    ],
+    [
+        [2, "INPUT", 1],
+        [1, "INPUT", 0],
+        [1, "XNOR"],
+        [1, "OR"],
+        [1, "OUTPUT", 1]
+    ],
+    [
+        [2, "INPUT", 1],
+        [2, "INPUT", 0],
+        [1, "OR"],
+        [1, "AND"],
+        [1, "XOR"],
+        [1, "OUTPUT", 0]
+    ],
+    [
+        [3, "INPUT", 1],
+        [1, "INPUT", 0],
+        [2, "NAND"],
+        [1, "OR"],
+        [1, "OUTPUT", 1]
+    ],
+    [
+        [4, "INPUT", 0],
+        [2, "NOR"],
+        [1, "AND"],
+        [1, "OUTPUT", 1]
+    ],
+    [
+        [2, "INPUT", 1],
+        [2, "INPUT", 0],
+        [2, "XOR"],
+        [1, "XNOR"],
+        [1, "OUTPUT", 1]
+    ],
+    [
+        [3, "INPUT", 1],
+        [1, "INPUT", 0],
+        [1, "AND"],
+        [1, "NAND"],
+        [1, "OR"],
+        [1, "OUTPUT", 1]
+    ],
+    [
+        [2, "INPUT", 0],
+        [2, "INPUT", 1],
+        [1, "NOR"],
+        [1, "AND"],
+        [1, "XOR"],
+        [1, "OUTPUT", 1]
+    ],
+    [
+        [4, "INPUT", 0],
+        [1, "INPUT", 1],
+        [2, "OR"],
+        [1, "NAND"],
+        [1, "OUTPUT", 0]
+    ],
+    [
+        [2, "INPUT", 1],
+        [2, "INPUT", 0],
+        [1, "XNOR"],
+        [1, "NOR"],
+        [1, "AND"],
+        [1, "OUTPUT", 0]
+    ],
+    
+    # HARD
+
+    [
+        [3, "INPUT", 1],
+        [2, "INPUT", 0],
+        [1, "AND"],
+        [1, "OR"],
+        [1, "NAND"],
+        [1, "XOR"],
+        [1, "OUTPUT", 1]
+    ],
+    [
+        [2, "INPUT", 1],
+        [2, "INPUT", 0],
+        [3, "NAND"],
+        [1, "OR"],
+        [1, "OUTPUT", 0]
+    ],
+    [
+        [4, "INPUT", 0],
+        [2, "INPUT", 1],
+        [2, "NOR"],
+        [1, "XOR"],
+        [1, "XNOR"],
+        [1, "OUTPUT", 1]
+    ],
+    [
+        [3, "INPUT", 1],
+        [3, "INPUT", 0],
+        [2, "AND"],
+        [1, "OR"],
+        [1, "NAND"],
+        [1, "XOR"],
+        [1, "OUTPUT", 0]
+    ],
+    [
+        [4, "INPUT", 1],
+        [2, "INPUT", 0],
+        [2, "XOR"],
+        [1, "NAND"],
+        [1, "NOR"],
+        [1, "XNOR"],
+        [1, "OUTPUT", 1]
+    ],
+
+    # Extra Hard
+
+    [
+        [2, "INPUT", 1],
+        [2, "INPUT", 0],
+        [1, "AND"],
+        [1, "OR"],
+        [1, "NAND"],
+        [1, "XOR"],
+        [1, "OUTPUT", 0],
+        [1, "OUTPUT", 1]
+    ],
+    [
+        [3, "INPUT", 1],
+        [3, "INPUT", 0],
+        [2, "XOR"],
+        [1, "AND"],
+        [1, "NAND"],
+        [1, "OR"],
+        [1, "OUTPUT", 1],
+        [1, "OUTPUT", 0]
+    ],
+    [
+        [4, "INPUT", 1],
+        [2, "INPUT", 0],
+        [2, "NOR"],
+        [2, "XNOR"],
+        [1, "AND"],
+        [1, "OR"],
+        [2, "OUTPUT", 1],
+    ],
+    [
+        [3, "INPUT", 1],
+        [3, "INPUT", 0],
+        [2, "NAND"],
+        [2, "XOR"],
+        [1, "NOR"],
+        [1, "AND"],
+        [1, "OUTPUT", 0],
+        [1, "OUTPUT", 1]
+    ],
+    [
+        [4, "INPUT", 1],
+        [4, "INPUT", 0],
+        [2, "AND"],
+        [2, "OR"],
+        [1, "XOR"],
+        [1, "NAND"],
+        [1, "NOR"],
+        [1, "XNOR"],
+        [1, "OUTPUT", 1],
+        [1, "OUTPUT", 0]
     ]
 ]
 
