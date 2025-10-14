@@ -1,7 +1,8 @@
 import arcade, arcade.gui, random, datetime
 
 from utils.utils import cubic_bezier_points, get_gate_port_position, generate_task_text
-from utils.constants import dropdown_style, LOGICAL_GATES, LEVELS
+from utils.constants import button_style, dropdown_style, LOGICAL_GATES, LEVELS
+from utils.preload import button_texture, button_hovered_texture
 
 from datetime import datetime
 
@@ -66,30 +67,42 @@ class Game(arcade.gui.UIView):
         self.anchor = self.add_widget(arcade.gui.UIAnchorLayout(size_hint=(1, 1)))
         self.tools_box = self.anchor.add(arcade.gui.UIBoxLayout(space_between=5), anchor_x="right", anchor_y="bottom", align_x=-5, align_y=20)
 
-        gate_names = list(LOGICAL_GATES.keys())
-
         if not level_num == -1:
             self.task_label = self.anchor.add(arcade.gui.UILabel(text=generate_task_text(LEVELS[level_num]), font_size=20, multiline=True), anchor_x="center", anchor_y="top")
             for requirement in LEVELS[level_num]:
                 if requirement[1] == "INPUT":
                     for _ in range(requirement[0]):
-                        self.add_gate(random.randint(0, self.window.width - 300), random.randint(200, self.window.height - 100), "INPUT", requirement[2])
+                        self.add_gate(random.randint(0, 200), random.randint(200, self.window.height - 100), "INPUT", requirement[2])
                 elif requirement[1] == "OUTPUT":
                     for _ in range(requirement[0]):
-                        self.add_gate(random.randint(0, self.window.width - 300), random.randint(200, self.window.height - 100), "OUTPUT")
+                        self.add_gate(random.randint(self.window.width - 500, self.window.width - 200), random.randint(200, self.window.height - 100), "OUTPUT", requirement[2])
+                else:
+                    for _ in range(requirement[0]):
+                        self.add_gate(random.randint(300, self.window.width - 600), random.randint(200, self.window.height - 100), requirement[1])
         else:
             self.task_label = self.anchor.add(arcade.gui.UILabel(text="Task: Have fun! Do whatever you want!", font_size=20), anchor_x="center", anchor_y="top")
-            gate_names.extend(["INPUT 0", "INPUT 1", "OUTPUT"])
 
-        for gate in gate_names:
-            button = self.tools_box.add(arcade.gui.UIFlatButton(width=self.window.width * 0.1, height=self.window.height * 0.075, text=f"Create {gate} gate", style=dropdown_style))
-            button.on_click = lambda event, gate=gate: self.add_gate(random.randint(0, self.window.width - 300), random.randint(200, self.window.height - 100), gate)
+            for gate in list(LOGICAL_GATES.keys()) + ["INPUT 0", "INPUT 1", "OUTPUT"]:
+                button = self.tools_box.add(arcade.gui.UIFlatButton(width=self.window.width * 0.1, height=self.window.height * 0.075, text=f"Create {gate} gate", style=dropdown_style))
+                
+                if "INPUT" in gate:
+                    func = lambda: (random.randint(0, 200), random.randint(200, self.window.height - 100))
+                elif gate == "OUTPUT":
+                    func = lambda: (random.randint(self.window.width - 500, self.window.width - 200), random.randint(200, self.window.height - 100))
+                else:
+                    func = lambda: (random.randint(300, self.window.width - 600), random.randint(200, self.window.height - 100))
+                
+                button.on_click = lambda event, func=func, gate=gate: self.add_gate(*func(), gate)
 
         screenshot_button = self.tools_box.add(arcade.gui.UIFlatButton(width=self.window.width * 0.1, height=self.window.height * 0.075, text="Screenshot", style=dropdown_style))
         screenshot_button.on_click = lambda event: self.screenshot()
 
         hide_button = self.tools_box.add(arcade.gui.UIFlatButton(width=self.window.width * 0.1, height=self.window.height * 0.075, text="Hide", style=dropdown_style))
         hide_button.on_click = lambda event: self.hide_show_panel()
+
+        self.back_button = arcade.gui.UITextureButton(texture=button_texture, texture_hovered=button_hovered_texture, text='<--', style=button_style, width=100, height=50)
+        self.back_button.on_click = lambda event: self.main_exit()
+        self.anchor.add(self.back_button, anchor_x="left", anchor_y="top", align_x=5, align_y=-5)
 
     def screenshot(self):
         self.tools_box.visible = False
@@ -127,10 +140,36 @@ class Game(arcade.gui.UIView):
             hide_button.text = "Show"
 
     def evaluate(self):
+        process_nodes = []
+        outputs = []
+
         for gate in self.gates:
             if not gate.output:
                 gate.calculate_value()
 
+            if gate.gate_type == "OUTPUT" and gate.input:
+                outputs.append(gate.value)
+
+            if not gate.gate_type in ["INPUT", "OUTPUT"] and gate.input and gate.output:
+                process_nodes.append(gate.gate_type)
+
+        for requirement in LEVELS[self.level_num]:
+            if requirement[1] == "INPUT":
+                continue
+
+            if requirement[1] == "OUTPUT":
+                for _ in range(requirement[0]):
+                    if not requirement[2] in outputs:
+                        return
+                    else:
+                        outputs.remove(requirement[2])
+            else:
+                for _ in range(requirement[0]):
+                    if not requirement[1] in process_nodes:
+                        return
+                    else:
+                        process_nodes.remove(requirement[1])
+                    
     def select_output(self, gate_id):
         if self.gates[gate_id].output:
             return
@@ -190,10 +229,13 @@ class Game(arcade.gui.UIView):
     def on_mouse_release(self, x, y, button, modifiers):
         self.dragged_gate = None
 
+    def main_exit(self):
+        from menus.main import Main
+        self.window.show_view(Main(self.pypresence_client))
+
     def on_key_press(self, symbol, modifiers):
         if symbol == arcade.key.ESCAPE:
-            from menus.main import Main
-            self.window.show_view(Main(self.pypresence_client))
+            self.main_exit()
 
     def on_draw(self):
         super().on_draw()

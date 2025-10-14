@@ -1,4 +1,5 @@
 import arcade, arcade.gui, asyncio, pypresence, time, copy, json
+
 from utils.preload import button_texture, button_hovered_texture
 from utils.constants import big_button_style, discord_presence_id
 from utils.utils import FakePyPresence
@@ -55,8 +56,15 @@ class Main(arcade.gui.UIView):
         self.play_button = self.box.add(arcade.gui.UITextureButton(text="Play", texture=button_texture, texture_hovered=button_hovered_texture, width=self.window.width / 2, height=self.window.height / 8, style=big_button_style))
         self.play_button.on_click = lambda event: self.play()
 
+        self.tutorial_button = self.box.add(arcade.gui.UITextureButton(text="Tutorial", texture=button_texture, texture_hovered=button_hovered_texture, width=self.window.width / 2, height=self.window.height / 8, style=big_button_style))
+        self.tutorial_button.on_click = lambda event: self.tutorial()
+
         self.settings_button = self.box.add(arcade.gui.UITextureButton(text="Settings", texture=button_texture, texture_hovered=button_hovered_texture, width=self.window.width / 2, height=self.window.height / 8, style=big_button_style))
         self.settings_button.on_click = lambda event: self.settings()
+
+    def tutorial(self):
+        from menus.tutorial import Tutorial
+        self.window.show_view(Tutorial(self.pypresence_client))
 
     def play(self):
         from menus.level_selector import LevelSelector

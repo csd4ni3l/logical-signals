@@ -41,7 +41,7 @@ class LevelSelector(arcade.gui.UIView):
 
         row, col = (n + 1) // 5, (n + 1) % 5
 
-        diy_button = self.grid.add(arcade.gui.UITextureButton(width=self.window.width / 8, height=self.window.height / 8, text=f"DIY", texture=button_texture, texture_hovered=button_hovered_texture, style=button_style), row=row, column=col)
+        diy_button = self.anchor.add(arcade.gui.UITextureButton(width=self.window.width / 2, height=self.window.height / 8, text=f"DIY", texture=button_texture, texture_hovered=button_hovered_texture, style=button_style), anchor_x="center", anchor_y="bottom", align_y=20)
         diy_button.on_click = lambda event: self.play(-1)
         
         self.grid._trigger_size_hint_update()

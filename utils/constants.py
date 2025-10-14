@@ -28,7 +28,7 @@ LEVELS = [
         [1, "INPUT", 1],
         [1, "INPUT", 0],
         [1, "OR"],
-        [1, "OUTPUT", 0]
+        [1, "OUTPUT", 1]
     ],
     [
         [2, "INPUT", 1],
