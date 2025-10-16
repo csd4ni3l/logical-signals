@@ -1,7 +1,7 @@
 import arcade, arcade.gui, asyncio, pypresence, time, copy, json
 
-from utils.preload import button_texture, button_hovered_texture
 from utils.constants import big_button_style, discord_presence_id
+from utils.preload import button_texture, button_hovered_texture
 from utils.utils import FakePyPresence
 
 class Main(arcade.gui.UIView):

@@ -7,7 +7,7 @@ menu_background_color = (30, 30, 47)
 log_dir = 'logs'
 discord_presence_id = 1427213145667276840
 
-SINGLE_INPUT_LOGICAL_GATES = ["NOT"]
+SINGLE_INPUT_LOGICAL_GATES = ["NOT", "OUTPUT"]
 
 LOGICAL_GATES = {
     "AND": lambda a, b: a and b,
@@ -148,7 +148,7 @@ LEVELS = [
         [1, "NOR"],
         [1, "AND"],
         [1, "XOR"],
-        [1, "OUTPUT", 1]
+        [1, "OUTPUT", 0]
     ],
     [
         [1, "INPUT", 1],
