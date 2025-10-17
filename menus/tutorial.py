@@ -18,6 +18,7 @@ class Tutorial(arcade.gui.UIView):
 - To create connections, click on the + buttons, left is the input, right is the output
 - On levels, a node has to have 2 inputs(Except the OUTPUT and NOT node), but only 1 output
 - On DIY mode, a node can have more than 2 inputs, except for OUTPUT and NOT
+- You can change an INPUT's gate value by clicking on it
 - You have to connect the nodes in a way to meet the required result
                                                      
 Logical Gates explanation:

@@ -7,16 +7,12 @@ from utils.constants import button_style, dropdown_style, LOGICAL_GATES, LEVELS,
 from utils.preload import button_texture, button_hovered_texture, logic_gate_textures
 
 class LogicalGate(arcade.Sprite):
-    def __init__(self, id, x, y, gate_type, value):
-        super().__init__(center_x=x, center_y=y, img=logic_gate_textures[gate_type][value if value is not None else 0])
+    def __init__(self, id, x, y, gate_type):
+        super().__init__(center_x=x, center_y=y, img=logic_gate_textures[gate_type][0])
 
         self.id = id
         self.gate_type = gate_type
-
-        if gate_type == "INPUT":
-            self.value = value
-        else:
-            self.value = 0
+        self.value = None
         
         self.input: list[LogicalGate] = []
         self.output: LogicalGate | None = None
@@ -34,7 +30,8 @@ class LogicalGate(arcade.Sprite):
                 self.value = None
         elif len(self.input) > 1:
             if len(self.input) == 2:
-                self.value = int(LOGICAL_GATES[self.gate_type](self.input[0].calculate_value(), self.input[1].calculate_value())) # have to convert to int cause it might return boolean
+                value = LOGICAL_GATES[self.gate_type](self.input[0].calculate_value(), self.input[1].calculate_value())
+                self.value = int(value) if value is not None else value # have to convert to int cause it might return boolean
             else:
                 self.value = multi_gate([input.calculate_value() for input in self.input], LOGICAL_GATES[self.gate_type])
         else:
@@ -71,28 +68,28 @@ class Game(arcade.gui.UIView):
         self.selected_output = None
 
         self.anchor = self.add_widget(arcade.gui.UIAnchorLayout(size_hint=(1, 1)))
-        self.tools_box = self.anchor.add(arcade.gui.UIBoxLayout(space_between=5), anchor_x="right", anchor_y="bottom", align_x=-5, align_y=20)
+        self.tools_box = self.anchor.add(arcade.gui.UIBoxLayout(space_between=5), anchor_x="right", anchor_y="center", align_x=-5)
 
         if not level_num == -1:
             self.task_label = self.anchor.add(arcade.gui.UILabel(text=generate_task_text(LEVELS[level_num]), font_size=20, multiline=True), anchor_x="center", anchor_y="top", align_y=-15)
             for requirement in LEVELS[level_num]:
                 if requirement[1] == "INPUT":
                     for _ in range(requirement[0]):
-                        self.add_gate(random.randint(0, 200), random.randint(200, self.window.height - 100), "INPUT", requirement[2])
+                        self.add_gate(random.randint(50, 200), random.randint(200, self.window.height - 100), "INPUT")
                 elif requirement[1] == "OUTPUT":
                     for _ in range(requirement[0]):
-                        self.add_gate(random.randint(self.window.width - 500, self.window.width - 350), random.randint(200, self.window.height - 100), "OUTPUT", requirement[2])
+                        self.add_gate(random.randint(self.window.width - 500, self.window.width - 350), random.randint(200, self.window.height - 100), "OUTPUT")
                 else:
                     for _ in range(requirement[0]):
                         self.add_gate(random.randint(300, self.window.width - 600), random.randint(200, self.window.height - 100), requirement[1])
         else:
             self.task_label = self.anchor.add(arcade.gui.UILabel(text="Task: Have fun! Do whatever you want!", font_size=20), anchor_x="center", anchor_y="top", align_y=-15)
 
-            for gate in list(LOGICAL_GATES.keys()) + ["INPUT 0", "INPUT 1", "OUTPUT"]:
-                button = self.tools_box.add(arcade.gui.UIFlatButton(width=self.window.width * 0.1, height=self.window.height * 0.075, text=f"Create {gate} gate", style=dropdown_style))
+            for gate in list(LOGICAL_GATES.keys()) + ["INPUT", "OUTPUT"]:
+                button = self.tools_box.add(arcade.gui.UIFlatButton(width=self.window.width * 0.125, height=self.window.height * 0.075, text=f"Create {gate} gate", style=dropdown_style))
                 
                 if "INPUT" in gate:
-                    func = lambda: (random.randint(0, 200), random.randint(200, self.window.height - 100))
+                    func = lambda: (random.randint(50, 200), random.randint(200, self.window.height - 100))
                 elif gate == "OUTPUT":
                     func = lambda: (random.randint(self.window.width - 500, self.window.width - 350), random.randint(200, self.window.height - 100))
                 else:
@@ -100,10 +97,10 @@ class Game(arcade.gui.UIView):
                 
                 button.on_click = lambda event, func=func, gate=gate: self.add_gate(*func(), gate)
 
-        screenshot_button = self.tools_box.add(arcade.gui.UIFlatButton(width=self.window.width * 0.1, height=self.window.height * 0.075, text="Screenshot", style=dropdown_style))
+        screenshot_button = self.tools_box.add(arcade.gui.UIFlatButton(width=self.window.width * 0.125, height=self.window.height * 0.075, text="Screenshot", style=dropdown_style))
         screenshot_button.on_click = lambda event: self.screenshot()
 
-        hide_button = self.tools_box.add(arcade.gui.UIFlatButton(width=self.window.width * 0.1, height=self.window.height * 0.075, text="Hide", style=dropdown_style))
+        hide_button = self.tools_box.add(arcade.gui.UIFlatButton(width=self.window.width * 0.125, height=self.window.height * 0.075, text="Hide", style=dropdown_style))
         hide_button.on_click = lambda event: self.hide_show_panel()
 
         self.back_button = arcade.gui.UITextureButton(texture=button_texture, texture_hovered=button_hovered_texture, text='<--', style=button_style, width=100, height=50)
@@ -238,20 +235,21 @@ class Game(arcade.gui.UIView):
         if self.selected_output is not None:
             self.add_connection()
 
-    def add_gate(self, x, y, gate_type, value=None):
-        if gate_type == "INPUT 0":
-            gate_type = "INPUT"
-            value = 0
-        elif gate_type == "INPUT 1":
-            gate_type = "INPUT"
-            value = 1
-
-        sprite = LogicalGate(len(self.gates), x, y, gate_type, value)
+    def add_gate(self, x, y, gate_type):
+        sprite = LogicalGate(len(self.gates), x, y, gate_type)
         self.gates.append(sprite)
         self.spritelist.append(sprite)
 
         self.evaluate()
 
+    def connection_between(self, p0, p3):
+        dx = p3[0] - p0[0]
+        offset = max(60, abs(dx) * 0.45)
+        c1 = (p0[0] + offset, p0[1])
+        c2 = (p3[0] - offset, p3[1])
+
+        return cubic_bezier_points(p0, c1, c2, p3, segments=100)
+            
     def on_mouse_press(self, x, y, button, modifiers):
         unprojected_vec = self.camera.unproject((x, y))
         world_vec = arcade.math.Vec2(unprojected_vec.x, unprojected_vec.y)
@@ -274,18 +272,25 @@ class Game(arcade.gui.UIView):
                     width_x = gate.center_x - world_vec.x
                     if abs(width_x) < (58 if gate.gate_type not in ["INPUT", "OUTPUT"] else 43): # INPUT and OUTPUT buttons are smaller, so they have to be adjusted to 43
                         self.dragged_gate = gate
+                        if gate.gate_type == "INPUT":
+                            gate.value = not gate.value
+                            self.evaluate()
                         break
                     else:
                         if width_x > 0:
-                            self.select_input(gate.id)
-                        else:
+                            if not gate.gate_type == "INPUT":
+                                self.select_input(gate.id)
+                        elif not gate.gate_type == "OUTPUT":
                             self.select_output(gate.id)
 
-    def on_mouse_drag(self, x, y, dx, dy, _buttons, _modifiers):
-        if self.dragged_gate is not None:
+    def on_mouse_drag(self, x, y, dx, dy, button, _modifiers):
+        if button == arcade.MOUSE_BUTTON_MIDDLE:
+            self.camera.position = self.camera.position - arcade.math.Vec2(dx / self.camera.zoom, dy / self.camera.zoom)
+
+        elif self.dragged_gate is not None:
             self.dragged_gate.center_x += dx / self.camera.zoom
             self.dragged_gate.center_y += dy / self.camera.zoom
-
+        
     def on_mouse_release(self, x, y, button, modifiers):
         self.dragged_gate = None
 
@@ -297,14 +302,6 @@ class Game(arcade.gui.UIView):
         if symbol == arcade.key.ESCAPE:
             self.main_exit()
 
-    def connection_between(self, p0, p3):
-        dx = p3[0] - p0[0]
-        offset = max(60, abs(dx) * 0.45)
-        c1 = (p0[0] + offset, p0[1])
-        c2 = (p3[0] - offset, p3[1])
-
-        return cubic_bezier_points(p0, c1, c2, p3, segments=100)
-            
     def on_draw(self):
         super().on_draw()
 

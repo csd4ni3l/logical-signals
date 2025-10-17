@@ -47,7 +47,7 @@ class LevelSelector(arcade.gui.UIView):
 
             completed_notice = '\n(Completed)' if n in self.data['completed_levels'] else ''
 
-            level_button = self.grid.add(arcade.gui.UITextureButton(width=self.window.width / 8, height=self.window.height / 12, text=f"{difficulty} Level {n + 1}{completed_notice}", texture=button_texture, texture_hovered=button_hovered_texture, style=button_style, multiline=True), row=row, column=col)
+            level_button = self.grid.add(arcade.gui.UITextureButton(width=self.window.width / 8, height=self.window.height / 13, text=f"{difficulty} Level {n + 1}{completed_notice}", texture=button_texture, texture_hovered=button_hovered_texture, style=button_style, multiline=True), row=row, column=col)
             level_button.on_click = lambda event, n=n: self.play(n)
 
         row, col = (n + 1) // 5, (n + 1) % 5
