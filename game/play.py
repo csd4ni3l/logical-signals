@@ -272,7 +272,7 @@ class Game(arcade.gui.UIView):
             for gate in self.gates:
                 if gate.rect.point_in_rect((world_vec.x, world_vec.y)):
                     width_x = gate.center_x - world_vec.x
-                    if abs(width_x) < 58:
+                    if abs(width_x) < (58 if gate.gate_type not in ["INPUT", "OUTPUT"] else 43): # INPUT and OUTPUT buttons are smaller, so they have to be adjusted to 43
                         self.dragged_gate = gate
                         break
                     else:
@@ -296,6 +296,14 @@ class Game(arcade.gui.UIView):
     def on_key_press(self, symbol, modifiers):
         if symbol == arcade.key.ESCAPE:
             self.main_exit()
+
+    def connection_between(self, p0, p3):
+        dx = p3[0] - p0[0]
+        offset = max(60, abs(dx) * 0.45)
+        c1 = (p0[0] + offset, p0[1])
+        c2 = (p3[0] - offset, p3[1])
+
+        return cubic_bezier_points(p0, c1, c2, p3, segments=100)
             
     def on_draw(self):
         super().on_draw()
@@ -310,15 +318,17 @@ class Game(arcade.gui.UIView):
             start_gate = self.gates[start_id]
             end_gate = self.gates[end_id]
 
-            p0 = get_gate_port_position(start_gate, "output")
-            p3 = get_gate_port_position(end_gate, "input")
-
-            dx = p3[0] - p0[0]
-            offset = max(60, abs(dx) * 0.45)
-            c1 = (p0[0] + offset, p0[1])
-            c2 = (p3[0] - offset, p3[1])
-
-            points = cubic_bezier_points(p0, c1, c2, p3, segments=100)
+            points = self.connection_between(get_gate_port_position(start_gate, "output"), get_gate_port_position(end_gate, "input"))
             self.bezier_points.append(points)
 
+            arcade.draw_line_strip(points, arcade.color.WHITE, 6)
+
+        mouse_x, mouse_y = self.window.mouse.data.get("x", 0), self.window.mouse.data.get("y", 0)
+
+        if self.selected_input is not None and self.selected_output is None:
+            points = self.connection_between(get_gate_port_position(self.gates[self.selected_input], "input"), (mouse_x, mouse_y))
+            arcade.draw_line_strip(points, arcade.color.WHITE, 6)
+
+        if self.selected_output is not None and self.selected_input is None:
+            points = self.connection_between(get_gate_port_position(self.gates[self.selected_output], "output"), (mouse_x, mouse_y))
             arcade.draw_line_strip(points, arcade.color.WHITE, 6)

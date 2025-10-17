@@ -27,7 +27,7 @@ Logical Gates explanation:
 - NOR: Returns 1 if all inputs are 0, otherwise 0
 - XOR: Returns 1 if atleast 1 input is different, otherwise 0
 - XNOR: Returns 1 if all inputs are the same, otherwise 0
-""", multiline=True, font_size=24), anchor_x="center", anchor_y="center")
+""", multiline=True, font_size=22), anchor_x="center", anchor_y="center")
 
         self.back_button = arcade.gui.UITextureButton(texture=button_texture, texture_hovered=button_hovered_texture, text='<--', style=button_style, width=100, height=50)
         self.back_button.on_click = lambda event: self.main_exit()
