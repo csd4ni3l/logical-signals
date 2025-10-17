@@ -16,16 +16,17 @@ class Tutorial(arcade.gui.UIView):
         self.instructions_label = self.anchor.add(arcade.gui.UILabel(text="""How to play:
 - You can move gates by dragging their buttons (not the plus ones)
 - To create connections, click on the + buttons, left is the input, right is the output
-- A node has to have 2 inputs(Except the OUTPUT node), but only 1 output
+- On levels, a node has to have 2 inputs(Except the OUTPUT and NOT node), but only 1 output
+- On DIY mode, a node can have more than 2 inputs, except for OUTPUT and NOT
 - You have to connect the nodes in a way to meet the required result
                                                      
 Logical Gates explanation:
-- AND: Returns 1 if both inputs are 1, otherwise 0
+- AND: Returns 1 if all inputs are 1, otherwise 0
 - OR: Returns 1 if any inputs are 1, otherwise 0
 - NAND: Returns 1 if any inputs are 0, otherwise 0
-- NOR: Returns 1 if both inputs are 0, otherwise 0
-- XOR: Returns 1 if inputs are different, otherwise 0
-- XNOR: Returns 1 if inputs are the same, otherwise 0
+- NOR: Returns 1 if all inputs are 0, otherwise 0
+- XOR: Returns 1 if atleast 1 input is different, otherwise 0
+- XNOR: Returns 1 if all inputs are the same, otherwise 0
 """, multiline=True, font_size=24), anchor_x="center", anchor_y="center")
 
         self.back_button = arcade.gui.UITextureButton(texture=button_texture, texture_hovered=button_hovered_texture, text='<--', style=button_style, width=100, height=50)

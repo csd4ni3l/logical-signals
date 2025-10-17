@@ -4,6 +4,14 @@ from utils.constants import menu_background_color
 
 import pyglet.display
 
+def multi_gate(values, func):
+    value = values[0]
+
+    for new_value in values[1:]:
+        value = func(value, new_value)
+
+    return value
+
 def generate_task_text(level):
     text = "Task: You need to use "
 

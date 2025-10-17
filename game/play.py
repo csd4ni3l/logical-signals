@@ -2,7 +2,7 @@ import arcade, arcade.gui, random, datetime, os, json
 
 from datetime import datetime
 
-from utils.utils import cubic_bezier_points, get_gate_port_position, generate_task_text
+from utils.utils import cubic_bezier_points, get_gate_port_position, generate_task_text, multi_gate
 from utils.constants import button_style, dropdown_style, LOGICAL_GATES, LEVELS, SINGLE_INPUT_LOGICAL_GATES
 from utils.preload import button_texture, button_hovered_texture, logic_gate_textures
 
@@ -28,9 +28,15 @@ class LogicalGate(arcade.Sprite):
         elif self.gate_type == "INPUT": # dont set INPUT to None
             pass
         elif self.gate_type in SINGLE_INPUT_LOGICAL_GATES and len(self.input) == 1:
-            self.value = int(LOGICAL_GATES[self.gate_type](self.input[0].calculate_value()))
-        elif len(self.input) == 2:
-            self.value = int(LOGICAL_GATES[self.gate_type](self.input[0].calculate_value(), self.input[1].calculate_value())) # have to convert to int cause it might return boolean
+            if self.input[0].value is not None:
+                self.value = int(LOGICAL_GATES[self.gate_type](self.input[0].calculate_value()))
+            else:
+                self.value = None
+        elif len(self.input) > 1:
+            if len(self.input) == 2:
+                self.value = int(LOGICAL_GATES[self.gate_type](self.input[0].calculate_value(), self.input[1].calculate_value())) # have to convert to int cause it might return boolean
+            else:
+                self.value = multi_gate([input.calculate_value() for input in self.input], LOGICAL_GATES[self.gate_type])
         else:
             self.value = None
 
@@ -63,8 +69,6 @@ class Game(arcade.gui.UIView):
 
         self.selected_input = None
         self.selected_output = None
-
-        self.ui.on_event = self.on_event
 
         self.anchor = self.add_widget(arcade.gui.UIAnchorLayout(size_hint=(1, 1)))
         self.tools_box = self.anchor.add(arcade.gui.UIBoxLayout(space_between=5), anchor_x="right", anchor_y="bottom", align_x=-5, align_y=20)
@@ -114,6 +118,9 @@ class Game(arcade.gui.UIView):
 
         if not "completed_levels" in self.data:
             self.data["completed_levels"] = []
+
+    def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
+        self.camera.zoom += scroll_y * 0.1
 
     def screenshot(self):
         self.tools_box.visible = False
@@ -219,9 +226,11 @@ class Game(arcade.gui.UIView):
         if gate_id == self.selected_output:
             return
         
-        if self.gates[gate_id].gate_type not in SINGLE_INPUT_LOGICAL_GATES and len(self.gates[gate_id].input) == 2:
-            return
-        elif self.gates[gate_id].gate_type in SINGLE_INPUT_LOGICAL_GATES and len(self.gates[gate_id].input) == 1:
+        if self.level_num != -1:
+            if self.gates[gate_id].gate_type not in SINGLE_INPUT_LOGICAL_GATES and len(self.gates[gate_id].input) == 2:
+                return
+            
+        if self.gates[gate_id].gate_type in SINGLE_INPUT_LOGICAL_GATES and len(self.gates[gate_id].input) == 1:
             return
 
         self.selected_input = gate_id
@@ -243,39 +252,39 @@ class Game(arcade.gui.UIView):
 
         self.evaluate()
 
-    def on_event(self, event):
-        arcade.gui.UIManager.on_event(self.ui, event)
+    def on_mouse_press(self, x, y, button, modifiers):
+        unprojected_vec = self.camera.unproject((x, y))
+        world_vec = arcade.math.Vec2(unprojected_vec.x, unprojected_vec.y)
 
-        if isinstance(event, arcade.gui.UIMousePressEvent):
-            if event.button == arcade.MOUSE_BUTTON_RIGHT:
-                for i in range(len(self.bezier_points) - 1, -1, -1):
-                    for point in self.bezier_points[i]:
-                        if event.pos.distance(point) < 5:
-                            self.gates[self.connections[i][0]].output = None
-                            self.gates[self.connections[i][1]].input.remove(self.gates[self.connections[i][0]])
-                            self.gates[self.connections[i][1]].calculate_value()
+        if button == arcade.MOUSE_BUTTON_RIGHT:
+            for i in range(len(self.bezier_points) - 1, -1, -1):
+                for point in self.bezier_points[i]:
+                    if world_vec.distance(point) < 5:
+                        self.gates[self.connections[i][0]].output = None
+                        self.gates[self.connections[i][1]].input.remove(self.gates[self.connections[i][0]])
+                        self.gates[self.connections[i][1]].calculate_value()
 
-                            self.connections.pop(i)
-                            self.bezier_points.pop(i)
-                            break
+                        self.connections.pop(i)
+                        self.bezier_points.pop(i)
+                        break
 
-            elif event.button == arcade.MOUSE_BUTTON_LEFT:
-                for gate in self.gates:
-                    if gate.rect.point_in_rect((event.x, event.y)):
-                        x = gate.center_x - event.x
-                        if abs(x) < 58:
-                            self.dragged_gate = gate
-                            break
+        elif button == arcade.MOUSE_BUTTON_LEFT:
+            for gate in self.gates:
+                if gate.rect.point_in_rect((world_vec.x, world_vec.y)):
+                    width_x = gate.center_x - world_vec.x
+                    if abs(width_x) < 58:
+                        self.dragged_gate = gate
+                        break
+                    else:
+                        if width_x > 0:
+                            self.select_input(gate.id)
                         else:
-                            if x > 0:
-                                self.select_input(gate.id)
-                            else:
-                                self.select_output(gate.id)
+                            self.select_output(gate.id)
 
     def on_mouse_drag(self, x, y, dx, dy, _buttons, _modifiers):
         if self.dragged_gate is not None:
-            self.dragged_gate.center_x += dx
-            self.dragged_gate.center_y += dy
+            self.dragged_gate.center_x += dx / self.camera.zoom
+            self.dragged_gate.center_y += dy / self.camera.zoom
 
     def on_mouse_release(self, x, y, button, modifiers):
         self.dragged_gate = None
