@@ -5,7 +5,7 @@ pyglet.options.debug_gl = False
 import logging, datetime, os, json, sys, arcade
 
 from utils.utils import get_closest_resolution, print_debug_info, on_exception
-from utils.constants import log_dir, menu_background_color
+from utils.constants import log_dir, save_dir, menu_background_color
 from menus.main import Main
 
 sys.excepthook = on_exception
@@ -15,6 +15,9 @@ pyglet.font.add_directory('./assets/fonts')
 
 if not log_dir in os.listdir():
     os.makedirs(log_dir)
+
+if not save_dir in os.listdir():
+    os.makedirs(save_dir)
 
 while len(os.listdir(log_dir)) >= 5:
     files = [(file, os.path.getctime(os.path.join(log_dir, file))) for file in os.listdir(log_dir)]

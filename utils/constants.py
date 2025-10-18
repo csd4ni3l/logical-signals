@@ -3,8 +3,10 @@ from arcade.types import Color
 from arcade.gui.widgets.buttons import UITextureButtonStyle, UIFlatButtonStyle
 from arcade.gui.widgets.slider import UISliderStyle
 
-menu_background_color = (30, 30, 47)
 log_dir = 'logs'
+save_dir = 'saves'
+
+menu_background_color = (30, 30, 47)
 discord_presence_id = 1427213145667276840
 
 SINGLE_INPUT_LOGICAL_GATES = ["NOT", "OUTPUT"]
@@ -318,4 +320,5 @@ settings = {
     },
     "Credits": {}
 }
+
 settings_start_category = "Graphics"

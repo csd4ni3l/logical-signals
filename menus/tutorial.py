@@ -15,7 +15,8 @@ class Tutorial(arcade.gui.UIView):
 
         self.instructions_label = self.anchor.add(arcade.gui.UILabel(text="""How to play:
 - You can move gates by dragging their buttons (not the plus ones)
-- To create connections, click on the + buttons, left is the input, right is the output
+- To create connections, click on the + buttons (left for input, right for output)
+- To remove connections, right click the connnection line
 - On levels, a node has to have 2 inputs(Except the OUTPUT and NOT node), but only 1 output
 - On DIY mode, a node can have more than 2 inputs, except for OUTPUT and NOT
 - You can change an INPUT's gate value by clicking on it
