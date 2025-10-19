@@ -1,5 +1,8 @@
 Logical Signals is a game where you have to direct and change signals with logical gates to meet the end result.
 
+Demo video:
+[![Demo Video](https://img.youtube.com/vi/OPEPoMZabS4/hqdefault.jpg)](https://youtu.be/OPEPoMZabS4)
+
 # How to play:
 - You can move gates by dragging their buttons (not the plus ones)
 - To create connections, click on the + buttons (left for input, right for output)
