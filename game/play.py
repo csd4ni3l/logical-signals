@@ -187,7 +187,7 @@ class Game(arcade.gui.UIView):
                 self.gates.append(sprite)
                 self.spritelist.append(sprite)
             else:
-                label = self.add_widget(arcade.gui.UIInputText(text=gate[4], x=gate[1], y=gate[2]))
+                label = self.add_widget(arcade.gui.UIInputText(text=gate[4], x=gate[1], y=gate[2], font_name="Roboto", width=self.window.width / 10, height=self.window.height / 30))
                 self.gates.append(label)
                 label.id = gate[0]
                 label.gate_type = "LABEL"
@@ -337,7 +337,7 @@ class Game(arcade.gui.UIView):
             self.gates.append(sprite)
             self.spritelist.append(sprite)
         else:
-            label = self.add_widget(arcade.gui.UIInputText(text="Placeholder", x=x, y=y))
+            label = self.add_widget(arcade.gui.UIInputText(text="Placeholder", x=x, y=y, font_name="Roboto", font_size=14, width=self.window.width / 10, height=self.window.height / 30))
             self.gates.append(label)
             label.id = len(self.gates)
             label.gate_type = "LABEL"
@@ -354,6 +354,57 @@ class Game(arcade.gui.UIView):
             
     def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
         self.camera.zoom += scroll_y * 0.1
+
+        gate: arcade.gui.UIInputText
+        for gate in self.gates:
+            if scroll_y == 1:
+                gate.scale(1.1)
+            else:
+                gate.scale(1 / 1.1)
+
+            if gate.width < self.window.width / 18:
+                gate.doc.set_style(
+                    0,
+                    len(gate.text),
+                    dict(font_name="Roboto", font_size=7, color=gate._text_color),
+                )
+            elif gate.width < self.window.width / 16:
+                gate.doc.set_style(
+                    0,
+                    len(gate.text),
+                    dict(font_name="Roboto", font_size=9, color=gate._text_color),
+                )
+            elif gate.width < self.window.width / 14:
+                  gate.doc.set_style(
+                    0,
+                    len(gate.text),
+                    dict(font_name="Roboto", font_size=11, color=gate._text_color),
+                )              
+            
+            elif gate.width < self.window.width / 12:
+                  gate.doc.set_style(
+                    0,
+                    len(gate.text),
+                    dict(font_name="Roboto", font_size=13, color=gate._text_color),
+                )            
+            elif gate.width < self.window.width / 10:
+                  gate.doc.set_style(
+                    0,
+                    len(gate.text),
+                    dict(font_name="Roboto", font_size=15, color=gate._text_color),
+                )            
+            elif gate.width < self.window.width / 8:
+                  gate.doc.set_style(
+                    0,
+                    len(gate.text),
+                    dict(font_name="Roboto", font_size=17, color=gate._text_color),
+                )              
+            elif gate.width < self.window.width / 6:
+                  gate.doc.set_style(
+                    0,
+                    len(gate.text),
+                    dict(font_name="Roboto", font_size=19, color=gate._text_color),
+                )              
 
     def on_event(self, event):
         arcade.gui.UIManager.on_event(self.ui, event)
