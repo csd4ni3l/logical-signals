@@ -19,3 +19,7 @@ Demo video:
 - NOR: Returns 1 if all inputs are 0, otherwise 0
 - XOR: Returns 1 if atleast 1 input is different, otherwise 0
 - XNOR: Returns 1 if all inputs are the same, otherwise 0
+
+---
+**Migration Notice:** This repository has been moved to https://git.csd4ni3l.hu/csd4ni3l/logical-signals
+---
