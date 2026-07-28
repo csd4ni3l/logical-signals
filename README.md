@@ -16,3 +16,9 @@ Logical Signals is a game where you have to direct and change signals with logic
 - NOR: Returns 1 if all inputs are 0, otherwise 0
 - XOR: Returns 1 if atleast 1 input is different, otherwise 0
 - XNOR: Returns 1 if all inputs are the same, otherwise 0
+
+## Mirrors
+
+[![Forgejo](https://img.shields.io/badge/Forgejo-git.csd4ni3l.hu-1e90ff)](https://git.csd4ni3l.hu/csd4ni3l/logical-signals)
+[![GitHub](https://img.shields.io/badge/GitHub-github.com-181717)](https://github.com/csd4ni3l/logical-signals)
+[![Codeberg](https://img.shields.io/badge/Codeberg-codeberg.org-2185D0)](https://codeberg.org/csd4ni3l/logical-signals)
