@@ -1,24 +1,28 @@
-import arcade.gui, arcade
+import arcade.gui, arcade, os
 
 from utils.constants import LOGICAL_GATES
 
 from PIL import ImageDraw, ImageFont
 
-button_texture = arcade.gui.NinePatchTexture(64 // 4, 64 // 4, 64 // 4, 64 // 4, arcade.load_texture("assets/graphics/button.png"))
-button_hovered_texture = arcade.gui.NinePatchTexture(64 // 4, 64 // 4, 64 // 4, 64 // 4, arcade.load_texture("assets/graphics/button_hovered.png"))
+# Get the directory where this module is located
+_module_dir = os.path.dirname(os.path.abspath(__file__))
+_assets_dir = os.path.join(os.path.dirname(_module_dir), 'assets')
 
-true_logic_gate = arcade.load_image("assets/graphics/logic_gate_true.png")
-false_logic_gate = arcade.load_image("assets/graphics/logic_gate_false.png")
+button_texture = arcade.gui.NinePatchTexture(64 // 4, 64 // 4, 64 // 4, 64 // 4, arcade.load_texture(os.path.join(_assets_dir, 'graphics', 'button.png')))
+button_hovered_texture = arcade.gui.NinePatchTexture(64 // 4, 64 // 4, 64 // 4, 64 // 4, arcade.load_texture(os.path.join(_assets_dir, 'graphics', 'button_hovered.png')))
 
-true_input_logic_gate = arcade.load_image("assets/graphics/logic_gate_input_true.png")
-false_input_logic_gate = arcade.load_image("assets/graphics/logic_gate_input_false.png")
+true_logic_gate = arcade.load_image(os.path.join(_assets_dir, 'graphics', 'logic_gate_true.png'))
+false_logic_gate = arcade.load_image(os.path.join(_assets_dir, 'graphics', 'logic_gate_false.png'))
 
-true_output_logic_gate = arcade.load_image("assets/graphics/logic_gate_output_true.png")
-false_output_logic_gate = arcade.load_image("assets/graphics/logic_gate_output_false.png")
+true_input_logic_gate = arcade.load_image(os.path.join(_assets_dir, 'graphics', 'logic_gate_input_true.png'))
+false_input_logic_gate = arcade.load_image(os.path.join(_assets_dir, 'graphics', 'logic_gate_input_false.png'))
+
+true_output_logic_gate = arcade.load_image(os.path.join(_assets_dir, 'graphics', 'logic_gate_output_true.png'))
+false_output_logic_gate = arcade.load_image(os.path.join(_assets_dir, 'graphics', 'logic_gate_output_false.png'))
 
 logic_gate_textures = {}
 
-font = ImageFont.truetype("assets/fonts/Roboto-Black.ttf", 14)
+font = ImageFont.truetype(os.path.join(_assets_dir, 'fonts', 'Roboto-Black.ttf'), 14)
 
 for gate_name in list(LOGICAL_GATES.keys()) + ["INPUT", "OUTPUT"]:
     logic_gate_textures[gate_name] = []
